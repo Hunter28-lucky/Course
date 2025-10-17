@@ -1,0 +1,40 @@
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1200" rx="120" fill="url(#paint0_radial_1_2)"/>
+  <g filter="url(#filter0_f_1_2)">
+    <circle cx="340" cy="420" r="240" fill="#6366F1" fill-opacity="0.25"/>
+  </g>
+  <g filter="url(#filter1_f_1_2)">
+    <circle cx="880" cy="320" r="200" fill="#22D3EE" fill-opacity="0.2"/>
+  </g>
+  <g filter="url(#filter2_f_1_2)">
+    <circle cx="980" cy="820" r="260" fill="#F97316" fill-opacity="0.15"/>
+  </g>
+  <rect x="180" y="260" width="840" height="600" rx="64" fill="rgba(15,23,42,0.6)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+  <rect x="260" y="340" width="320" height="200" rx="36" fill="rgba(255,255,255,0.08)"/>
+  <rect x="620" y="340" width="260" height="120" rx="32" fill="rgba(255,255,255,0.12)"/>
+  <rect x="620" y="500" width="260" height="40" rx="20" fill="rgba(255,255,255,0.12)"/>
+  <rect x="260" y="580" width="620" height="40" rx="20" fill="rgba(255,255,255,0.12)"/>
+  <rect x="260" y="660" width="500" height="28" rx="14" fill="rgba(255,255,255,0.1)"/>
+  <rect x="260" y="720" width="360" height="28" rx="14" fill="rgba(255,255,255,0.1)"/>
+  <defs>
+    <filter id="filter0_f_1_2" x="-120" y="-40" width="920" height="920" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_1_2"/>
+    </filter>
+    <filter id="filter1_f_1_2" x="480" y="-80" width="800" height="800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_1_2"/>
+    </filter>
+    <filter id="filter2_f_1_2" x="520" y="360" width="920" height="920" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+      <feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_1_2"/>
+    </filter>
+    <radialGradient id="paint0_radial_1_2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(180 220) rotate(45) scale(1320)">
+      <stop stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#01010F"/>
+    </radialGradient>
+  </defs>
+</svg>
