@@ -287,40 +287,45 @@ insert into public.courses (title, description, price, category, rating, thumbna
 -- STORAGE BUCKET SETUP
 -- ============================================
 
--- Create storage bucket for lesson videos (run this in Supabase dashboard or via API)
--- insert into storage.buckets (id, name, public) values ('lesson-videos', 'lesson-videos', true);
+-- Create storage bucket for lesson videos
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('lesson-videos', 'lesson-videos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Enable RLS on storage.objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
 
 -- Storage policies for lesson-videos bucket
--- create policy "Anyone can view lesson videos"
---   on storage.objects for select
---   using (bucket_id = 'lesson-videos');
+CREATE POLICY "Anyone can view lesson videos"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'lesson-videos');
 
--- create policy "Admins can upload lesson videos"
---   on storage.objects for insert
---   with check (
---     bucket_id = 'lesson-videos' and
---     exists (
---       select 1 from public.profiles
---       where id = auth.uid() and role = 'admin'
---     )
---   );
+CREATE POLICY "Admins can upload lesson videos"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'lesson-videos' AND
+  EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  )
+);
 
--- create policy "Admins can update lesson videos"
---   on storage.objects for update
---   using (
---     bucket_id = 'lesson-videos' and
---     exists (
---       select 1 from public.profiles
---       where id = auth.uid() and role = 'admin'
---     )
---   );
+CREATE POLICY "Admins can update lesson videos"
+ON storage.objects FOR UPDATE
+USING (
+  bucket_id = 'lesson-videos' AND
+  EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  )
+);
 
--- create policy "Admins can delete lesson videos"
---   on storage.objects for delete
---   using (
---     bucket_id = 'lesson-videos' and
---     exists (
---       select 1 from public.profiles
---       where id = auth.uid() and role = 'admin'
---     )
---   );
+CREATE POLICY "Admins can delete lesson videos"
+ON storage.objects FOR DELETE
+USING (
+  bucket_id = 'lesson-videos' AND
+  EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'admin'
+  )
+);
