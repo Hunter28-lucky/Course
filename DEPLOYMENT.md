@@ -4,6 +4,21 @@ This guide walks you through deploying your production-ready course platform to 
 
 ---
 
+## ⚠️ IMPORTANT: Required Environment Variables
+
+**Your deployment WILL FAIL without these environment variables set in Vercel.**
+
+The following variables are **REQUIRED** and must be set before deployment:
+
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous/public key
+
+See **Step 2.3** below for detailed instructions on setting these in Vercel.
+
+A `.env.example` file is included in the repository for reference.
+
+---
+
 ## 📋 Prerequisites
 
 - [Supabase account](https://supabase.com) (free tier works)
@@ -110,16 +125,49 @@ git push -u origin main
 
 ### 2.3 Add Environment Variables
 
-Add these four variables:
+⚠️ **CRITICAL STEP** - Do not skip this or your build will fail!
+
+Add these environment variables in Vercel **before** deploying:
+
+#### Required Variables
+
+These are **mandatory** for the app to build and run:
+
+| Key | Value | Where to Find |
+|-----|-------|---------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://yourproject.supabase.co` | Supabase Dashboard → Project Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGc...` (long JWT token) | Supabase Dashboard → Project Settings → API → Project API keys → anon/public |
+
+#### Optional Variables (Shopify Integration)
+
+Only add these if you're using Shopify for course purchases:
 
 | Key | Value | Notes |
 |-----|-------|-------|
-| `NEXT_PUBLIC_SUPABASE_URL` | `https://yourproject.supabase.co` | From Supabase API settings |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGc...` | From Supabase API settings (anon key) |
-| `SUPABASE_URL` | `https://yourproject.supabase.co` | Same as public URL |
-| `SUPABASE_ANON_KEY` | `eyJhbGc...` | Same as public anon key |
+| `SHOPIFY_STORE_DOMAIN` | `your-store.myshopify.com` | Optional - for Shopify integration |
+| `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | `your-token` | Optional - for Shopify integration |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | `your-token` | Optional - for Shopify integration |
+| `SHOPIFY_WEBHOOK_SECRET` | `your-secret` | Optional - for Shopify integration |
+| `SHOPIFY_APP_URL` | `https://your-app.vercel.app` | Optional - for Shopify integration |
 
-6. Click **Deploy**
+**How to add variables in Vercel:**
+
+1. In the deployment setup screen, expand **Environment Variables**
+2. Click **Add** for each variable
+3. Enter the **Key** (exact spelling, case-sensitive)
+4. Paste the **Value** from your Supabase dashboard
+5. Select **Production**, **Preview**, and **Development** (check all three)
+6. Click **Add** to confirm
+
+**Or set them after deployment:**
+
+1. Go to your Vercel project → **Settings** → **Environment Variables**
+2. Add each variable with the same process above
+3. After adding all variables, go to **Deployments** → Click ⋯ menu on latest deployment → **Redeploy**
+
+> 💡 **Tip**: Copy the `.env.example` file from the repository as a reference for all required variables.
+
+6. Click **Deploy** (only after adding the required variables)
 
 ### 2.4 Wait for Build
 
@@ -257,6 +305,30 @@ Click to open and verify the site loads!
 ---
 
 ## 🔍 Troubleshooting
+
+### Issue: Build fails with "Invalid input: expected string, received undefined"
+
+This is the **most common deployment error**. It means required environment variables are missing.
+
+**Error message:**
+```
+Error [ZodError]: [
+  {
+    "expected": "string",
+    "code": "invalid_type",
+    "path": ["NEXT_PUBLIC_SUPABASE_URL"],
+    "message": "Invalid input: expected string, received undefined"
+  }
+]
+```
+
+**Fix:**
+1. Go to Vercel Dashboard → Your Project → **Settings** → **Environment Variables**
+2. Verify both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are set
+3. Make sure they're enabled for **Production**, **Preview**, and **Development**
+4. Check for typos in the variable names (they're case-sensitive)
+5. Get the correct values from Supabase: **Project Settings** → **API**
+6. After adding variables, go to **Deployments** → Click ⋯ → **Redeploy**
 
 ### Issue: "Unable to fetch courses"
 
