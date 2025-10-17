@@ -112,10 +112,19 @@ export const AdminDashboard = ({
   const handleSaveCourse = async () => {
     try {
       if (selectedCourseId === "new") {
-        const { error } = await supabase.from("courses").insert({
-          ...courseForm,
-        });
+        const { data, error } = await supabase
+          .from("courses")
+          .insert({
+            ...courseForm,
+          })
+          .select()
+          .single();
         if (error) throw error;
+        
+        // Update the selected course ID to the newly created course
+        if (data) {
+          setSelectedCourseId(data.id);
+        }
         toast.success("Course created");
       } else {
         const { error } = await supabase
