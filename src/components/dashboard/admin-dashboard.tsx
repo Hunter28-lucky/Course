@@ -110,51 +110,51 @@ export const AdminDashboard = ({
   };
 
   const handleSaveCourse = async () => {
-    startTransition(async () => {
-      try {
-        if (selectedCourseId === "new") {
-          const { error } = await supabase.from("courses").insert({
+    try {
+      if (selectedCourseId === "new") {
+        const { error } = await supabase.from("courses").insert({
+          ...courseForm,
+        });
+        if (error) throw error;
+        toast.success("Course created");
+      } else {
+        const { error } = await supabase
+          .from("courses")
+          .update({
             ...courseForm,
-          });
-          if (error) throw error;
-          toast.success("Course created");
-        } else {
-          const { error } = await supabase
-            .from("courses")
-            .update({
-              ...courseForm,
-            })
-            .eq("id", selectedCourseId);
-          if (error) throw error;
-          toast.success("Course updated");
-        }
-        router.refresh();
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to save course");
+          })
+          .eq("id", selectedCourseId);
+        if (error) throw error;
+        toast.success("Course updated");
       }
-    });
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to save course");
+    }
   };
 
   const handleDeleteCourse = async () => {
     if (selectedCourseId === "new") return;
 
-    startTransition(async () => {
-      try {
-        const { error } = await supabase
-          .from("courses")
-          .delete()
-          .eq("id", selectedCourseId);
-        if (error) throw error;
-        toast.success("Course deleted");
-        setSelectedCourseId("new");
-        resetFormForCourse(null);
+    try {
+      const { error } = await supabase
+        .from("courses")
+        .delete()
+        .eq("id", selectedCourseId);
+      if (error) throw error;
+      toast.success("Course deleted");
+      setSelectedCourseId("new");
+      resetFormForCourse(null);
+      startTransition(() => {
         router.refresh();
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to delete course");
-      }
-    });
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to delete course");
+    }
   };
 
   const handleAddLesson = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -169,54 +169,63 @@ export const AdminDashboard = ({
     const videoUrl = formData.get("videoUrl") as string;
     const order = Number(formData.get("order")) || lessonsForCourse.length + 1;
 
-    startTransition(async () => {
-      try {
-        const { error } = await supabase.from("lessons").insert({
-          title,
-          video_url: videoUrl,
-          order,
-          course_id: selectedCourse.id,
-        });
-        if (error) throw error;
-        toast.success("Lesson created");
-        event.currentTarget.reset();
+    try {
+      const { error } = await supabase.from("lessons").insert({
+        title,
+        video_url: videoUrl,
+        order,
+        course_id: selectedCourse.id,
+      });
+      if (error) throw error;
+      toast.success("Lesson created");
+      event.currentTarget.reset();
+      startTransition(() => {
         router.refresh();
-      } catch (error) {
-        console.error(error);
-        toast.error("Unable to create lesson");
-      }
-    });
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Unable to create lesson");
+    }
   };
 
   const handleUploadVideo = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    if (!event.target.files?.length || !selectedCourse) return;
+    if (!event.target.files?.length) {
+      toast.error("Please select a file");
+      return;
+    }
+
+    if (selectedCourseId === "new") {
+      toast.error("Please save the course first before uploading assets");
+      return;
+    }
+
     const file = event.target.files[0];
 
-    startTransition(async () => {
-      try {
-        const path = `${selectedCourse.id}/${Date.now()}-${file.name}`;
-        const { data, error } = await supabase.storage
-          .from("lesson-videos")
-          .upload(path, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-        if (error) throw error;
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("lesson-videos").getPublicUrl(data.path);
-        setCourseForm((prev) => ({
-          ...prev,
-          thumbnail_url: publicUrl,
-        }));
-        toast.success("Video uploaded");
-      } catch (error) {
-        console.error(error);
-        toast.error("Video upload failed");
-      }
-    });
+    try {
+      const path = `${selectedCourseId}/${Date.now()}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from("lesson-videos")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+      if (error) throw error;
+      
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("lesson-videos").getPublicUrl(data.path);
+      
+      setCourseForm((prev) => ({
+        ...prev,
+        thumbnail_url: publicUrl,
+      }));
+      toast.success("Asset uploaded successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Upload failed. Make sure the lesson-videos bucket exists in Supabase Storage.");
+    }
   };
 
   const callShopifyEndpoint = async (method: "POST" | "DELETE") => {
@@ -225,41 +234,41 @@ export const AdminDashboard = ({
       return;
     }
 
-    startTransition(async () => {
-      try {
-        const url =
+    try {
+      const url =
+        method === "POST"
+          ? "/api/shopify/sync"
+          : `/api/shopify/sync?courseId=${selectedCourse.id}`;
+
+      const response = await fetch(url, {
+        method,
+        headers:
           method === "POST"
-            ? "/api/shopify/sync"
-            : `/api/shopify/sync?courseId=${selectedCourse.id}`;
-
-        const response = await fetch(url, {
-          method,
-          headers:
-            method === "POST"
-              ? { "Content-Type": "application/json" }
-              : undefined,
-          body:
-            method === "POST"
-              ? JSON.stringify({ courseId: selectedCourse.id })
-              : undefined,
-        });
-
-        if (!response.ok) {
-          const message = await response.text();
-          throw new Error(message || "Shopify request failed");
-        }
-
-        toast.success(
+            ? { "Content-Type": "application/json" }
+            : undefined,
+        body:
           method === "POST"
-            ? "Course synced to Shopify"
-            : "Course disconnected from Shopify",
-        );
-        router.refresh();
-      } catch (error) {
-        console.error(error);
-        toast.error("Shopify sync failed");
+            ? JSON.stringify({ courseId: selectedCourse.id })
+            : undefined,
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || "Shopify request failed");
       }
-    });
+
+      toast.success(
+        method === "POST"
+          ? "Course synced to Shopify"
+          : "Course disconnected from Shopify",
+      );
+      startTransition(() => {
+        router.refresh();
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Shopify sync failed");
+    }
   };
 
   return (
