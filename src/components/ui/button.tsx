@@ -6,20 +6,20 @@ import { cn } from "@/lib/utils";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-full text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 disabled:cursor-not-allowed disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none",
   {
     variants: {
       variant: {
         primary:
-          "bg-foreground text-background hover:bg-foreground/90 shadow-lg shadow-foreground/20",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
         secondary:
-          "bg-background text-foreground border border-foreground/20 hover:bg-foreground/10",
-        ghost: "bg-transparent text-foreground hover:bg-foreground/10",
+          "bg-secondary text-secondary-foreground border border-input hover:bg-secondary/80",
+        ghost: "bg-transparent hover:bg-accent hover:text-accent-foreground",
       },
       size: {
-        sm: "h-9 px-4",
-        md: "h-11 px-6",
-        lg: "h-12 px-8 text-base",
+        sm: "h-9 px-3 text-xs",
+        md: "h-10 px-4",
+        lg: "h-11 px-8 text-base",
         icon: "h-10 w-10",
       },
     },

@@ -281,155 +281,212 @@ export const AdminDashboard = ({
   };
 
   return (
-    <div className="space-y-10">
-      <div
-        className={`grid gap-6 ${
-          shopifyEnabled ? "sm:grid-cols-4" : "sm:grid-cols-3"
-        }`}
-      >
-        <Card className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-foreground/40">
-            Courses
-          </p>
-          <p className="text-2xl font-semibold text-foreground">
-            {stats.totalCourses}
-          </p>
+    <div className="space-y-8">
+      {/* Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Courses</p>
+              <p className="text-3xl font-bold mt-2">{stats.totalCourses}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Plus className="h-6 w-6 text-primary" />
+            </div>
+          </div>
         </Card>
-        <Card className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-foreground/40">
-            Students
-          </p>
-          <p className="text-2xl font-semibold text-foreground">
-            {stats.totalStudents}
-          </p>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Students</p>
+              <p className="text-3xl font-bold mt-2">{stats.totalStudents}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Plus className="h-6 w-6 text-primary" />
+            </div>
+          </div>
         </Card>
-        <Card className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-foreground/40">
-            Revenue (mock)
-          </p>
-          <p className="text-2xl font-semibold text-foreground">
-            {formatCurrency(stats.totalRevenue)}
-          </p>
+
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Revenue</p>
+              <p className="text-3xl font-bold mt-2">{formatCurrency(stats.totalRevenue)}</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Plus className="h-6 w-6 text-primary" />
+            </div>
+          </div>
         </Card>
+
         {shopifyEnabled && (
-          <Card className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.35em] text-foreground/40">
-              Shopify status
-            </p>
-            <p className="text-2xl font-semibold text-foreground">
-              {selectedCourse?.shopify_product_id ? "Linked" : "Not linked"}
-            </p>
-            {selectedCourse?.shopify_product_id && (
-              <div className="space-y-1 text-xs text-foreground/40">
-                <p>Product: {selectedCourse.shopify_product_id}</p>
-                {selectedCourse.shopify_variant_id && (
-                  <p>Variant: {selectedCourse.shopify_variant_id}</p>
-                )}
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Shopify</p>
+                <p className="text-lg font-semibold mt-2">
+                  {selectedCourse?.shopify_product_id ? "Linked" : "Not Linked"}
+                </p>
               </div>
-            )}
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Plus className="h-6 w-6 text-primary" />
+              </div>
+            </div>
           </Card>
         )}
       </div>
 
-      <Card className="space-y-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Course Management */}
+      <Card className="p-6 space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">
-              Courses
-            </p>
-            <h2 className="text-2xl font-semibold text-foreground">
-              Manage catalog
-            </h2>
+            <h2 className="text-2xl font-bold">Course Management</h2>
+            <p className="text-muted-foreground mt-1">Create and manage your courses</p>
           </div>
-          <Button onClick={() => updateCourseForm("new")}>
-            <Plus size={16} /> New course
+          <Button onClick={() => updateCourseForm("new")} size="lg">
+            <Plus size={18} />
+            New Course
           </Button>
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          {courses.map((course) => (
-            <Button
-              key={course.id}
-              variant={selectedCourseId === course.id ? "primary" : "ghost"}
-              onClick={() => updateCourseForm(course.id)}
-            >
-              {course.title}
-            </Button>
-          ))}
-        </div>
+        {/* Course Selector */}
+        {courses.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {courses.map((course) => (
+              <Button
+                key={course.id}
+                variant={selectedCourseId === course.id ? "primary" : "secondary"}
+                onClick={() => updateCourseForm(course.id)}
+                size="sm"
+              >
+                {course.title}
+              </Button>
+            ))}
+          </div>
+        )}
 
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* Course Form and Lessons */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Course Details Form */}
           <div className="space-y-4">
-            <Input
-              placeholder="Course title"
-              value={courseForm.title}
-              onChange={(event) =>
-                setCourseForm((prev) => ({
-                  ...prev,
-                  title: event.target.value,
-                }))
-              }
-            />
-            <Textarea
-              placeholder="Describe what students will master"
-              value={courseForm.description}
-              onChange={(event) =>
-                setCourseForm((prev) => ({
-                  ...prev,
-                  description: event.target.value,
-                }))
-              }
-            />
-            <div className="flex gap-4">
-              <Input
-                type="number"
-                min={0}
-                placeholder="Price"
-                value={courseForm.price}
-                onChange={(event) =>
-                  setCourseForm((prev) => ({
-                    ...prev,
-                    price: Number(event.target.value ?? 0),
-                  }))
-                }
-              />
-              <Input
-                placeholder="Category"
-                value={courseForm.category}
-                onChange={(event) =>
-                  setCourseForm((prev) => ({
-                    ...prev,
-                    category: event.target.value,
-                  }))
-                }
-              />
+            <h3 className="text-lg font-semibold">Course Details</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Course Title</label>
+                <Input
+                  placeholder="e.g., Master React in 2025"
+                  value={courseForm.title}
+                  onChange={(event) =>
+                    setCourseForm((prev) => ({
+                      ...prev,
+                      title: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Description</label>
+                <Textarea
+                  placeholder="Describe what students will learn..."
+                  value={courseForm.description}
+                  rows={4}
+                  onChange={(event) =>
+                    setCourseForm((prev) => ({
+                      ...prev,
+                      description: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Price ($)</label>
+                  <Input
+                    type="number"
+                    min={0}
+                    placeholder="99"
+                    value={courseForm.price}
+                    onChange={(event) =>
+                      setCourseForm((prev) => ({
+                        ...prev,
+                        price: Number(event.target.value ?? 0),
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Category</label>
+                  <Input
+                    placeholder="Development"
+                    value={courseForm.category}
+                    onChange={(event) =>
+                      setCourseForm((prev) => ({
+                        ...prev,
+                        category: event.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Thumbnail URL</label>
+                <Input
+                  placeholder="https://example.com/image.jpg"
+                  value={courseForm.thumbnail_url}
+                  onChange={(event) =>
+                    setCourseForm((prev) => ({
+                      ...prev,
+                      thumbnail_url: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 text-sm font-medium hover:border-primary/50 hover:bg-accent/50 transition-colors">
+                  <UploadCloud size={20} />
+                  <span>Upload Preview Image/Video</span>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    hidden
+                    onChange={handleUploadVideo}
+                  />
+                </label>
+              </div>
             </div>
-            <Input
-              placeholder="Thumbnail URL"
-              value={courseForm.thumbnail_url}
-              onChange={(event) =>
-                setCourseForm((prev) => ({
-                  ...prev,
-                  thumbnail_url: event.target.value,
-                }))
-              }
-            />
-            <label className="flex cursor-pointer items-center gap-2 rounded-2xl border border-dashed border-foreground/30 p-4 text-sm text-foreground/60">
-              <UploadCloud size={18} /> Upload preview asset
-              <input
-                type="file"
-                accept="video/*"
-                hidden
-                onChange={handleUploadVideo}
-              />
-            </label>
+
+            {/* Actions */}
+            <div className="flex flex-wrap gap-3 pt-4 border-t">
+              <Button onClick={handleSaveCourse} disabled={isPending} size="lg">
+                {isPending ? "Saving..." : selectedCourseId === "new" ? "Create Course" : "Save Changes"}
+              </Button>
+              
+              {selectedCourseId !== "new" && (
+                <Button
+                  variant="secondary"
+                  onClick={handleDeleteCourse}
+                  disabled={isPending}
+                >
+                  <Trash2 size={16} />
+                  Delete Course
+                </Button>
+              )}
+            </div>
 
             {shopifyEnabled && selectedCourseId !== "new" && (
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap gap-2 pt-2">
                 <Button
                   variant="secondary"
                   onClick={() => callShopifyEndpoint("POST")}
                   disabled={isPending}
+                  size="sm"
                 >
                   Sync to Shopify
                 </Button>
@@ -438,83 +495,105 @@ export const AdminDashboard = ({
                     variant="ghost"
                     onClick={() => callShopifyEndpoint("DELETE")}
                     disabled={isPending}
+                    size="sm"
                   >
                     Unlink Shopify
                   </Button>
                 )}
               </div>
             )}
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={handleSaveCourse} disabled={isPending}>
-                Save course
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={handleDeleteCourse}
-                disabled={selectedCourseId === "new" || isPending}
-              >
-                <Trash2 size={16} /> Delete
-              </Button>
-            </div>
           </div>
 
+          {/* Lessons Section */}
           <div className="space-y-4">
-            <p className="text-sm font-semibold text-foreground">
-              Lessons ({lessonsForCourse.length})
-            </p>
-            <div className="space-y-3">
-              {lessonsForCourse.map((lesson) => (
-                <div
-                  key={lesson.id}
-                  className="flex items-center justify-between rounded-2xl border border-foreground/10 p-3 text-sm text-foreground/70"
-                >
-                  <div className="flex items-center gap-2">
-                    <Video size={16} />
-                    <span>
-                      #{lesson.order} {lesson.title}
-                    </span>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">
+                Course Lessons ({lessonsForCourse.length})
+              </h3>
+            </div>
+
+            {/* Lessons List */}
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {lessonsForCourse.length > 0 ? (
+                lessonsForCourse.map((lesson) => (
+                  <div
+                    key={lesson.id}
+                    className="flex items-center justify-between rounded-lg border bg-card p-4 hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold">
+                        {lesson.order}
+                      </div>
+                      <div>
+                        <p className="font-medium">{lesson.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Added {new Date(lesson.created_at ?? Date.now()).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <Video size={18} className="text-muted-foreground" />
                   </div>
-                  <span className="text-xs text-foreground/40">
-                    {new Date(
-                      lesson.created_at ?? Date.now(),
-                    ).toLocaleDateString()}
-                  </span>
+                ))
+              ) : (
+                <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center">
+                  <Video size={32} className="mx-auto mb-2 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">
+                    No lessons yet. Add your first lesson below.
+                  </p>
                 </div>
-              ))}
-              {!lessonsForCourse.length && (
-                <p className="text-xs text-foreground/50">
-                  No lessons yet. Create the first lesson to unlock the course
-                  experience.
-                </p>
               )}
             </div>
 
+            {/* Add Lesson Form */}
             {selectedCourse && (
               <form
                 onSubmit={handleAddLesson}
-                className="space-y-3 rounded-2xl border border-foreground/10 p-4"
+                className="space-y-3 rounded-lg border bg-muted/50 p-4"
               >
-                <p className="text-xs uppercase tracking-[0.3em] text-foreground/40">
-                  Add lesson
-                </p>
-                <Input name="title" placeholder="Lesson title" required />
-                <Input
-                  name="videoUrl"
-                  placeholder="Video URL"
-                  required
-                  type="url"
-                />
-                <Input
-                  name="order"
-                  placeholder="Order (optional)"
-                  type="number"
-                  min={1}
-                />
-                <Button type="submit" variant="secondary" disabled={isPending}>
-                  Add lesson
+                <h4 className="font-semibold text-sm">Add New Lesson</h4>
+                
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Lesson Title</label>
+                  <Input 
+                    name="title" 
+                    placeholder="e.g., Introduction to React Hooks" 
+                    required 
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Video URL</label>
+                  <Input
+                    name="videoUrl"
+                    placeholder="https://youtube.com/watch?v=..."
+                    required
+                    type="url"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Order (Optional)</label>
+                  <Input
+                    name="order"
+                    placeholder={`${lessonsForCourse.length + 1}`}
+                    type="number"
+                    min={1}
+                  />
+                </div>
+
+                <Button type="submit" disabled={isPending} className="w-full">
+                  <Plus size={16} />
+                  {isPending ? "Adding..." : "Add Lesson"}
                 </Button>
               </form>
+            )}
+
+            {!selectedCourse && (
+              <div className="rounded-lg border-2 border-dashed border-muted-foreground/25 p-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                  Save the course first to add lessons
+                </p>
+              </div>
             )}
           </div>
         </div>
